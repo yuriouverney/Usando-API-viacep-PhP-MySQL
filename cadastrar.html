@@ -1,0 +1,165 @@
+ <html>
+    <head>
+    <title>Lista de Endereços!</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+
+	<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <img src="./imagens/logo.png" width="25" height="25" class="d-inline-block align-top" alt="">
+        <a class="navbar-brand" href="#"> Cadastro - ViaCep</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+            </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.php">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="cadastrar.html">Cadastre-se<span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/yuriouverney/Usando-API-viacep-PhP-MySQL">Projeto GITHUB</a>
+          </li>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+
+    <!-- Adicionando JQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+
+    <!-- Adicionando Javascript -->
+
+    <script>
+
+        $(document).ready(function() {
+
+            function limpa_formulário_cep() {
+                // Limpa valores do formulário de cep.
+                $("#rua").val("");
+                $("#bairro").val("");
+                $("#cidade").val("");
+                $("#uf").val("");
+                $("#ibge").val("");
+            }
+            
+            //Quando o campo cep perde o foco.
+            $("#cep").blur(function() {
+
+                //Nova variável "cep" somente com dígitos.
+                var cep = $(this).val().replace(/\D/g, '');
+
+                //Verifica se campo cep possui valor informado.
+                if (cep != "") {
+
+                    //Expressão regular para validar o CEP.
+                    var validacep = /^[0-9]{8}$/;
+
+                    //Valida o formato do CEP.
+                    if(validacep.test(cep)) {
+
+                        //Preenche os campos com "..." enquanto consulta webservice.
+                        $("#rua").val("...");
+                        $("#bairro").val("...");
+                        $("#cidade").val("...");
+                        $("#uf").val("...");
+                        $("#ibge").val("...");
+
+                        //Consulta o webservice viacep.com.br/
+                        $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+
+                            if (!("erro" in dados)) {
+                                //Atualiza os campos com os valores da consulta.
+                                $("#rua").val(dados.logradouro);
+                                $("#bairro").val(dados.bairro);
+                                $("#cidade").val(dados.localidade);
+                                $("#uf").val(dados.uf);
+                                $("#ibge").val(dados.ibge);
+                            } //end if.
+                            else {
+                                //CEP pesquisado não foi encontrado.
+                                limpa_formulário_cep();
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } //end if.
+                    else {
+                        //cep é inválido.
+                        limpa_formulário_cep();
+                        alert("Formato de CEP inválido.");
+                    }
+                } //end if.
+                else {
+                    //cep sem valor, limpa formulário.
+                    limpa_formulário_cep();
+                }
+            });
+        });
+
+    </script>
+    </head>
+    <body>
+
+<style>
+.border-class
+{
+  border:thin black solid;
+  margin:20px;
+  padding:20px;
+}
+</style>
+
+    <form id="test-form" class="border-class" novalidate style="border:2px solid black"  method="post" action="cadastrar.php">
+  <div class="form-group">
+    <label for="txtNome">Digite seu primeiro nome!</label>
+    <input type="nome" class="form-control" id="txtNome" name="txtNome" placeholder="Seu nome" required>
+  </div>
+
+  <div class="form-group">
+    <label for="cep">Digite seu CEP</label>
+    <input type="cep" class="form-control" id="cep" name="cep" value="" maxlength="9" placeholder="cep" required>
+  </div>
+
+  <div class="form-group">
+    <label for="rua">Rua</label>
+    <input type="rua" class="form-control" id="rua" name="rua" placeholder="rua">
+  </div>
+
+  <div class="form-group">
+    <label for="bairro">Bairro</label>
+    <input type="bairro" class="form-control" id="bairro" name="bairro" placeholder="bairro">
+  </div>
+
+  <div class="form-group">
+    <label for="cidade">Cidade</label>
+    <input type="cidade" class="form-control" id="cidade" name="cidade" placeholder="cidade">
+  </div>
+
+  <div class="form-group">
+    <label for="uf">Estado</label>
+    <input type="uf" class="form-control" id="uf" name="uf" placeholder="uf">
+  </div>
+
+  <div class="form-group">
+    <label for="ibge">IBGE</label>
+    <input type="ibge" class="form-control" id="ibge" name="ibge" placeholder="ibge">
+  </div>
+
+  <input class="btn btn-dark" type="submit" name="Submit" id="submit-form" value="Submit" onclick="submit-form"">
+</form>
+
+
+    </body>
+
+    </html>
